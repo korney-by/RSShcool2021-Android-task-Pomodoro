@@ -1,4 +1,4 @@
-package com.korneysoft.rsshcool2021_android_task_pomodoro
+package com.korneysoft.pomodoro
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

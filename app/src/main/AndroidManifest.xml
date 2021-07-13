@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.korneysoft.rsshcool2021_android_task_pomodoro">
+    package="com.korneysoft.pomodoro">
 
     <application
         android:allowBackup="true"
@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Pomodoro">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.korneysoft.pomodoro.MainActivity"
             android:screenOrientation="sensor"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
+            <!--            android:windowSoftInputMode="adjustPan"-->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.korneysoft.rsshcool2021_android_task_pomodoro
+package com.korneysoft.pomodoro
 
 import org.junit.Test
 
