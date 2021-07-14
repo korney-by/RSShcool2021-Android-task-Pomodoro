@@ -1,10 +1,12 @@
-package com.korneysoft.pomodoro
+
+package com.example.stopwatch
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
+import com.korneysoft.pomodoro.Stopwatch
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 
 class StopwatchAdapter(
@@ -21,12 +23,9 @@ class StopwatchAdapter(
         holder.bind(getItem(position))
     }
 
-
     private companion object {
 
         private val itemComparator = object : DiffUtil.ItemCallback<Stopwatch>() {
-
-            override fun getChangePayload(oldItem: Stopwatch, newItem: Stopwatch) = Any()
 
             override fun areItemsTheSame(oldItem: Stopwatch, newItem: Stopwatch): Boolean {
                 return oldItem.id == newItem.id
@@ -36,6 +35,8 @@ class StopwatchAdapter(
                 return oldItem.currentMs == newItem.currentMs &&
                         oldItem.isStarted == newItem.isStarted
             }
+
+            override fun getChangePayload(oldItem: Stopwatch, newItem: Stopwatch) = Any()
         }
     }
 }
