@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.korneysoft.rsshcool2021_android_task_pomodoro"
+        applicationId "com.korneysoft.pomodoro"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

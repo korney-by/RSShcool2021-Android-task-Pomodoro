@@ -27,17 +27,22 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
             adapter = stopwatchAdapter
         }
 
+
         binding.addNewStopwatchButton.setOnClickListener {
             binding.editTextNumber.text.toString().toLongOrNull()?.apply {
                 stopwatches.add(
                     Stopwatch(
                         nextId++,
                         this * 60000,
-                        true
+                        this * 60000,
+                        false,
+                        false
                     )
+
+
                 )
                 stopwatchAdapter.submitList(stopwatches.toList())
-                binding.editTextNumber.text.clear()
+                //binding.editTextNumber.text.clear()
             }
         }
     }
@@ -68,7 +73,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
         val newTimers = mutableListOf<Stopwatch>()
         stopwatches.forEach {
             if (it.id == id) {
-                newTimers.add(Stopwatch(it.id, currentMs ?: it.currentMs, isStarted))
+                newTimers.add(Stopwatch(it.id,it.startMs, currentMs ?: it.currentMs, isStarted,it.isFinished))
             } else {
                 newTimers.add(it)
             }

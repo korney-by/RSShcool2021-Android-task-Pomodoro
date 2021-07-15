@@ -20,6 +20,15 @@ class StopwatchViewHolder(
 
     fun bind(stopwatch: Stopwatch) {
         binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+        binding.customViewPomodoroUnit.setPeriod(stopwatch.startMs)
+        binding.customViewPomodoroUnit.setCurrent(stopwatch.currentMs)
+
+        if (stopwatch.isFinished) {
+            //TODO красим фон в СТОП
+        }else{
+            //TODO возвращаем фон в стандарт
+        }
+
 
         if (stopwatch.isStarted) {
             startTimer(stopwatch)
@@ -31,6 +40,7 @@ class StopwatchViewHolder(
     }
 
     private fun initButtonsListeners(stopwatch: Stopwatch) {
+
         binding.startPauseButton.setOnClickListener {
             if (stopwatch.isStarted) {
                 listener.stop(stopwatch.id, stopwatch.currentMs)
@@ -45,8 +55,8 @@ class StopwatchViewHolder(
     }
 
     private fun startTimer(stopwatch: Stopwatch) {
-        val drawable = resources.getDrawable(R.drawable.ic_baseline_pause_24)
-        binding.startPauseButton.setImageDrawable(drawable)
+        binding.startPauseButton.text = resources.getString(R.string.button_text_stop)
+        stopwatch.isFinished=false
 
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
@@ -57,13 +67,17 @@ class StopwatchViewHolder(
     }
 
     private fun stopTimer(stopwatch: Stopwatch) {
-        val drawable = resources.getDrawable(R.drawable.ic_baseline_play_arrow_24)
-        binding.startPauseButton.setImageDrawable(drawable)
+        binding.startPauseButton.text = resources.getString(R.string.button_text_start)
 
         timer?.cancel()
 
         binding.blinkingIndicator.isInvisible = true
         (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()
+
+        if (stopwatch.isFinished) {
+            stopwatch.isStarted=false
+            stopwatch.currentMs = stopwatch.startMs
+        }
     }
 
     private fun getCountDownTimer(stopwatch: Stopwatch): CountDownTimer {
@@ -71,8 +85,19 @@ class StopwatchViewHolder(
             val interval = UNIT_TEN_MS
 
             override fun onTick(millisUntilFinished: Long) {
-                stopwatch.currentMs -= interval
+                if (stopwatch.isFinished) return
+
+                stopwatch.isFinished=(stopwatch.currentMs<=0)
+
+                if (stopwatch.isFinished){
+                    stopTimer(stopwatch)
+                }else{
+                    stopwatch.currentMs -= interval
+                }
+
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+                binding.customViewPomodoroUnit.setPeriod(stopwatch.startMs)
+                binding.customViewPomodoroUnit.setCurrent(stopwatch.currentMs)
             }
 
             override fun onFinish() {
@@ -83,14 +108,15 @@ class StopwatchViewHolder(
 
     private fun Long.displayTime(): String {
         if (this <= 0L) {
-            return START_TIME
+            return resources.getString(R.string.null_text_stopwatch)
         }
         val h = this / 1000 / 3600
         val m = this / 1000 % 3600 / 60
         val s = this / 1000 % 60
-        val ms = this % 1000 / 10
+        //val ms = this % 1000 / 10
 
-        return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}:${displaySlot(ms)}"
+        return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}"
+        //return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}:${displaySlot(ms)}"
     }
 
     private fun displaySlot(count: Long): String {
@@ -103,8 +129,7 @@ class StopwatchViewHolder(
 
     private companion object {
 
-        private const val START_TIME = "00:00:00:00"
-        private const val UNIT_TEN_MS = 10L
+        private const val UNIT_TEN_MS = 1000L
         private const val PERIOD = 1000L * 60L * 60L * 24L // Day
     }
 }
