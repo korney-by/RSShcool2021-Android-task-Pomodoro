@@ -10,12 +10,13 @@ import com.example.stopwatch.StopwatchAdapter
 import com.korneysoft.pomodoro.databinding.ActivityMainBinding
 import com.korneysoft.pomodoro.interfaces.StopwatchColorizer
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchColorizer {
     private lateinit var binding: ActivityMainBinding
 
-    private val stopwatchAdapter = StopwatchAdapter(this,this)
+    private val stopwatchAdapter = StopwatchAdapter(this, this)
     private val stopwatches = mutableListOf<Stopwatch>()
     private var runningStopwatch = STOPWATCHES_NO_RUNNING
     private var timer: CountDownTimer? = null
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchColorizer 
         if (stopwatches[id].isFinished) {
             //theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
             theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
-        }else {
+        } else {
             theme.resolveAttribute(R.attr.backgroundColor, typedValue, true)
         }
         return typedValue.data  // **just add this line to your code!!**
@@ -78,6 +79,9 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchColorizer 
     override fun delete(id: Int) {
         stopwatches.remove(stopwatches.find { it.id == id })
         stopwatchAdapter.submitList(stopwatches.toList())
+
+//        stopwatches.removeAt(id)
+//        stopwatchAdapter.notifyItemRemoved(id)
     }
 
 

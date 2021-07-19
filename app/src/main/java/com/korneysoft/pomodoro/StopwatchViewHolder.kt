@@ -10,6 +10,7 @@ import com.korneysoft.pomodoro.Stopwatch
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
 import com.korneysoft.pomodoro.interfaces.StopwatchColorizer
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
+import java.util.*
 
 
 class StopwatchViewHolder(
@@ -53,6 +54,7 @@ class StopwatchViewHolder(
     private fun startTimer(stopwatch: Stopwatch) {
         binding.startPauseButton.text = resources.getString(R.string.button_text_stop)
         stopwatch.isFinished = false
+        stopwatch.startTime = Date()
 
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
@@ -72,9 +74,12 @@ class StopwatchViewHolder(
         binding.blinkingIndicator.isInvisible = true
         (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()
 
+       // stopwatch.restMs = stopwatch.currentMs
+
         if (stopwatch.isFinished) {
             stopwatch.isStarted = false
             stopwatch.currentMs = stopwatch.periodMs
+            stopwatch.restMs = stopwatch.periodMs
 
         }
         setBackgroundColor(stopwatch.id)
@@ -96,8 +101,9 @@ class StopwatchViewHolder(
                 if (stopwatch.isFinished) {
                     stopTimer(stopwatch)
                 } else {
-                    stopwatch.currentMs -= interval
-                    //stopwatch.currentMs = millisUntilFinished
+                    //stopwatch.currentMs -= interval
+                    stopwatch.currentMs =
+                        stopwatch.restMs - (Date().time - stopwatch.startTime.time)
                 }
 
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
@@ -134,7 +140,7 @@ class StopwatchViewHolder(
 
     private companion object {
 
-        private const val UNIT_TEN_MS = 1000L
+        private const val UNIT_TEN_MS = 100L
         private const val PERIOD = 1000L * 60L * 60L * 24L // Day
     }
 }
