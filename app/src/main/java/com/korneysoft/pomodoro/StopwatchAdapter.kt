@@ -7,16 +7,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
 import com.korneysoft.pomodoro.Stopwatch
+import com.korneysoft.pomodoro.interfaces.StopwatchColorizer
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 
 class StopwatchAdapter(
-    private val listener: StopwatchListener
+    private val listener: StopwatchListener,
+    private val colorizer: StopwatchColorizer
 ) : ListAdapter<Stopwatch, StopwatchViewHolder>(itemComparator) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StopwatchViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = StopwatchItemBinding.inflate(layoutInflater, parent, false)
-        return StopwatchViewHolder(binding, listener, binding.root.context.resources)
+        return StopwatchViewHolder(binding, listener,colorizer, binding.root.context.resources)
     }
 
     override fun onBindViewHolder(holder: StopwatchViewHolder, position: Int) {

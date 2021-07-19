@@ -2,16 +2,20 @@ package com.korneysoft.pomodoro
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.TypedValue
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.stopwatch.StopwatchAdapter
 import com.korneysoft.pomodoro.databinding.ActivityMainBinding
+import com.korneysoft.pomodoro.interfaces.StopwatchColorizer
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 
-class MainActivity : AppCompatActivity(), StopwatchListener {
+
+class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchColorizer {
     private lateinit var binding: ActivityMainBinding
 
-    private val stopwatchAdapter = StopwatchAdapter(this)
+    private val stopwatchAdapter = StopwatchAdapter(this,this)
     private val stopwatches = mutableListOf<Stopwatch>()
     private var runningStopwatch = STOPWATCHES_NO_RUNNING
     private var timer: CountDownTimer? = null
@@ -34,7 +38,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
                     Stopwatch(
                         nextId++,
                         this * 60000,
-                        this * 60000,
+                        this * 60000 - 50000, //TODO убрать
                         false,
                         false
                     )
@@ -45,6 +49,18 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
                 //binding.editTextNumber.text.clear()
             }
         }
+    }
+
+    @ColorInt
+    override fun getBackgroundColor(id: Int): Int {
+        val typedValue = TypedValue()
+        if (stopwatches[id].isFinished) {
+            //theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+        }else {
+            theme.resolveAttribute(R.attr.backgroundColor, typedValue, true)
+        }
+        return typedValue.data  // **just add this line to your code!!**
     }
 
     override fun start(id: Int) {
@@ -73,7 +89,15 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
         val newTimers = mutableListOf<Stopwatch>()
         stopwatches.forEach {
             if (it.id == id) {
-                newTimers.add(Stopwatch(it.id,it.startMs, currentMs ?: it.currentMs, isStarted,it.isFinished))
+                newTimers.add(
+                    Stopwatch(
+                        it.id,
+                        it.periodMs,
+                        currentMs ?: it.currentMs,
+                        isStarted,
+                        it.isFinished
+                    )
+                )
             } else {
                 newTimers.add(it)
             }
@@ -89,6 +113,8 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
         stopwatchAdapter.submitList(newTimers)
         stopwatches.clear()
         stopwatches.addAll(newTimers)
+
+
     }
 
     private companion object {

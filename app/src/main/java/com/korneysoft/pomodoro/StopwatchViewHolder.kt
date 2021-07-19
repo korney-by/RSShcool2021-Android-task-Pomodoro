@@ -8,11 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.korneysoft.pomodoro.R
 import com.korneysoft.pomodoro.Stopwatch
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
+import com.korneysoft.pomodoro.interfaces.StopwatchColorizer
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
+
 
 class StopwatchViewHolder(
     private val binding: StopwatchItemBinding,
     private val listener: StopwatchListener,
+    private val colorizer: StopwatchColorizer,
     private val resources: Resources
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -20,15 +23,8 @@ class StopwatchViewHolder(
 
     fun bind(stopwatch: Stopwatch) {
         binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
-        binding.customViewPomodoroUnit.setPeriod(stopwatch.startMs)
+        binding.customViewPomodoroUnit.setPeriod(stopwatch.periodMs)
         binding.customViewPomodoroUnit.setCurrent(stopwatch.currentMs)
-
-        if (stopwatch.isFinished) {
-            //TODO красим фон в СТОП
-        }else{
-            //TODO возвращаем фон в стандарт
-        }
-
 
         if (stopwatch.isStarted) {
             startTimer(stopwatch)
@@ -56,7 +52,7 @@ class StopwatchViewHolder(
 
     private fun startTimer(stopwatch: Stopwatch) {
         binding.startPauseButton.text = resources.getString(R.string.button_text_stop)
-        stopwatch.isFinished=false
+        stopwatch.isFinished = false
 
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
@@ -64,6 +60,8 @@ class StopwatchViewHolder(
 
         binding.blinkingIndicator.isInvisible = false
         (binding.blinkingIndicator.background as? AnimationDrawable)?.start()
+
+        setBackgroundColor(stopwatch.id)
     }
 
     private fun stopTimer(stopwatch: Stopwatch) {
@@ -75,9 +73,15 @@ class StopwatchViewHolder(
         (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()
 
         if (stopwatch.isFinished) {
-            stopwatch.isStarted=false
-            stopwatch.currentMs = stopwatch.startMs
+            stopwatch.isStarted = false
+            stopwatch.currentMs = stopwatch.periodMs
+
         }
+        setBackgroundColor(stopwatch.id)
+    }
+
+    fun setBackgroundColor(stopwatchID: Int) {
+        binding.stopwatchUnit.setBackgroundColor(colorizer.getBackgroundColor(stopwatchID))
     }
 
     private fun getCountDownTimer(stopwatch: Stopwatch): CountDownTimer {
@@ -87,16 +91,17 @@ class StopwatchViewHolder(
             override fun onTick(millisUntilFinished: Long) {
                 if (stopwatch.isFinished) return
 
-                stopwatch.isFinished=(stopwatch.currentMs<=0)
+                stopwatch.isFinished = (stopwatch.currentMs <= 0)
 
-                if (stopwatch.isFinished){
+                if (stopwatch.isFinished) {
                     stopTimer(stopwatch)
-                }else{
+                } else {
                     stopwatch.currentMs -= interval
+                    //stopwatch.currentMs = millisUntilFinished
                 }
 
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
-                binding.customViewPomodoroUnit.setPeriod(stopwatch.startMs)
+                binding.customViewPomodoroUnit.setPeriod(stopwatch.periodMs)
                 binding.customViewPomodoroUnit.setCurrent(stopwatch.currentMs)
             }
 
