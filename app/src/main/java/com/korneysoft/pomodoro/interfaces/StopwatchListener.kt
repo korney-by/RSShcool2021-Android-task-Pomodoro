@@ -1,13 +1,15 @@
 package com.korneysoft.pomodoro.interfaces
 
+import com.korneysoft.pomodoro.datamodel.Stopwatch
+
 
 interface StopwatchListener {
 
-    fun start(id: Int)
+    fun start(stopwatch:Stopwatch)
 
-    fun stop(id: Int, currentMs: Long)
+    fun stop(stopwatch: Stopwatch)
 
   //  fun reset(id: Int)
 
-    fun delete(id: Int)
+    fun delete(stopwatch:Stopwatch)
 }

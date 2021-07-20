@@ -1,4 +1,4 @@
-package com.korneysoft.pomodoro
+package com.korneysoft.pomodoro.viewmodel
 
 import android.content.Context
 import android.graphics.Canvas
@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AttrRes
+import com.korneysoft.pomodoro.R
 
 class CustomViewPomodoro @JvmOverloads constructor(
     context: Context,

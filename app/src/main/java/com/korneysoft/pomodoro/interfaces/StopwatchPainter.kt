@@ -1,10 +1,5 @@
 package com.korneysoft.pomodoro.interfaces
 
-import androidx.annotation.ColorInt
-
-interface StopwatchColorizer {
-
-    @ColorInt
+interface StopwatchPainter {
     fun getBackgroundColor(id: Int): Int
-
 }
