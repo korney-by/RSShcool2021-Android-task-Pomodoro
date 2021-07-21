@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter {
                     )
                 )
                 stopwatchAdapter.submitList(stopwatches.toList())
-                binding.editTextNumber.text.clear()
+                binding.editTextNumber.selectAll()
             }
         }
     }
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter {
                         stopFinished(it)
                     } else {
                         if (it.isStarted) {
-                            it.currentMs = it.restMs - (Date().time - it.startTime)
+                            it.currentMs = it.restMs - (System.currentTimeMillis() - it.startTime)
                         }
                     }
                     showChanges(index, it)
@@ -94,6 +94,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter {
             }
         }
     }
+
 
     fun showChanges(index: Int, stopwatch: Stopwatch) {
         if (index >= 0) {
@@ -138,7 +139,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter {
             isStarted = isStart
             if (isStart) {
                 isFinished = false
-                startTime = Date().time
+                startTime = System.currentTimeMillis()
                 restMs = currentMs
                 runningStopwatchID = id
                 startMainTimer()
