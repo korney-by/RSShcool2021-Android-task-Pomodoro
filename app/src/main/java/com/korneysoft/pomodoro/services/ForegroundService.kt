@@ -21,7 +21,7 @@ const val COMMAND_START = "COMMAND_START"
 const val COMMAND_STOP = "COMMAND_STOP"
 const val COMMAND_ID = "COMMAND_ID"
 const val STARTED_TIMER_TIME_MS = "STARTED_TIMER_TIME"
-const val STARTED_TIMER_LEFT_MS = "STARTED_TIMER_LEFTTIME"
+const val STARTED_TIMER_LEFT_MS = "STARTED_TIMER_LEFT_TIME"
 
 class ForegroundService : Service() {
 
@@ -31,7 +31,7 @@ class ForegroundService : Service() {
 
     private val builder by lazy {
         NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Simple Timer")
+            .setContentTitle("Pomodoro Timer")
             .setGroup("Timer")
             .setGroupSummary(false)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -60,7 +60,7 @@ class ForegroundService : Service() {
         when (intent?.extras?.getString(COMMAND_ID) ?: INVALID) {
             COMMAND_START -> {
                 val startTime = intent?.extras?.getLong(STARTED_TIMER_TIME_MS) ?: return
-                val leftTime = intent?.extras?.getLong(STARTED_TIMER_LEFT_MS) ?: return
+                val leftTime = intent.extras?.getLong(STARTED_TIMER_LEFT_MS) ?: return
                 commandStart(startTime, leftTime)
             }
             COMMAND_STOP -> commandStop()

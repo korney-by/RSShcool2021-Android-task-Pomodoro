@@ -24,6 +24,10 @@ private fun displaySlot(count: Long): String {
     }
 }
 
+fun getCurrentTime(): Long {
+    return SystemClock.elapsedRealtime()
+}
+
 fun getStopwatchCurrentTime(startTimeMs: Long, leftTimeMs: Long): Long {
-    return leftTimeMs - (SystemClock.elapsedRealtime() - startTimeMs)
+    return leftTimeMs - (getCurrentTime() - startTimeMs)
 }

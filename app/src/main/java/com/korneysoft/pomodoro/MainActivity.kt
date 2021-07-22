@@ -2,7 +2,7 @@ package com.korneysoft.pomodoro
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
+//import android.os.CountDownTimer
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
@@ -14,6 +14,8 @@ import com.korneysoft.pomodoro.datamodel.getStopwatchIndex
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 import com.korneysoft.pomodoro.interfaces.StopwatchPainter
 import com.korneysoft.pomodoro.services.*
+import com.korneysoft.pomodoro.viewmodel.StopwatchAdapter
+import com.korneysoft.pomodoro.viewmodel.getCurrentTime
 import com.korneysoft.pomodoro.viewmodel.getStopwatchCurrentTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -87,18 +89,18 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
     }
 
     private fun getLeftTimeCurrentStopwatch(): Long {
-        if (isStopwatchRunning) {
-            return stopwatches.getStopwatch(runningStopwatchID)?.leftTime ?: 0
+        return if (isStopwatchRunning) {
+            stopwatches.getStopwatch(runningStopwatchID)?.leftTime ?: 0
         } else {
-            return 0
+            0
         }
     }
 
     private fun getStartTimeCurrentStopwatch(): Long {
-        if (isStopwatchRunning) {
-            return stopwatches.getStopwatch(runningStopwatchID)?.startTime ?: 0
+        return if (isStopwatchRunning) {
+            stopwatches.getStopwatch(runningStopwatchID)?.startTime ?: 0
         } else {
-            return 0
+            0
         }
     }
 
@@ -122,22 +124,22 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         }
     }
 
-    private fun stopTimer() {
-        //mainTimer?.cancel()
-    }
+//    private fun stopTimer() {
+//        mainTimer?.cancel()
+//    }
 
-    private fun getMainTimer(): CountDownTimer {
-        return object : CountDownTimer(PERIOD, INTERVAL) {
-
-            override fun onTick(millisUntilFinished: Long) {
-                onTickTimer();
-            }
-
-            override fun onFinish() {
-                //    binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
-            }
-        }
-    }
+//    private fun getMainTimer(): CountDownTimer {
+//        return object : CountDownTimer(PERIOD, INTERVAL) {
+//
+//            override fun onTick(millisUntilFinished: Long) {
+//                onTickTimer()
+//            }
+//
+//            override fun onFinish() {
+//                //    binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+//            }
+//        }
+//    }
 
     private fun onTickTimer() {
 
@@ -158,7 +160,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         }
     }
 
-    fun showChanges(index: Int, stopwatch: Stopwatch) {
+    private fun showChanges(index: Int, stopwatch: Stopwatch) {
         if (index >= 0) {
             stopwatches[index] = stopwatch
             stopwatchAdapter.submitList(stopwatches.toList())
@@ -179,7 +181,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         return typedValue.data  // **just add this line to your code!!**
     }
 
-    fun stopFinished(stopwatch: Stopwatch) {
+    private fun stopFinished(stopwatch: Stopwatch) {
         stopwatch.isFinished = true
     }
 
@@ -201,7 +203,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
             isStarted = isStart
             if (isStart) {
                 isFinished = false
-                startTime = System.currentTimeMillis()
+                startTime = getCurrentTime()
                 leftTime = currentMs
                 runningStopwatchID = id
                 //startMainTimer()
@@ -236,7 +238,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
     private companion object {
         private const val STOPWATCHES_NO_RUNNING = -1
         private const val INTERVAL = 100L
-        private const val PERIOD = 1000L * 60L * 60L * 24L // Day
+        //private const val PERIOD = 1000L * 60L * 60L * 24L // Day
 
     }
 }

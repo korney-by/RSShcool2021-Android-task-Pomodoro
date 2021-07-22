@@ -1,4 +1,4 @@
-package com.korneysoft.pomodoro
+package com.korneysoft.pomodoro.viewmodel
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

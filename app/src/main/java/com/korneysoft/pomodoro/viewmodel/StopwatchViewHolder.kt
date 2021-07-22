@@ -1,14 +1,14 @@
-package com.korneysoft.pomodoro
+package com.korneysoft.pomodoro.viewmodel
 
 import android.content.res.Resources
 import android.graphics.drawable.AnimationDrawable
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
+import com.korneysoft.pomodoro.R
 import com.korneysoft.pomodoro.datamodel.Stopwatch
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
 import com.korneysoft.pomodoro.interfaces.StopwatchPainter
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
-import com.korneysoft.pomodoro.viewmodel.displayTime
 
 
 class StopwatchViewHolder(
