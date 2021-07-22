@@ -7,7 +7,7 @@ data class Stopwatch(
     var isStarted: Boolean,
     var isFinished: Boolean,
     var startTime: Long = 0,
-    var restMs: Long = 0 // rest from last start
+    var leftTime: Long = 0 // rest from last start
 )
 
 fun MutableList<Stopwatch>.getStopwatch(id: Int): Stopwatch?  {
