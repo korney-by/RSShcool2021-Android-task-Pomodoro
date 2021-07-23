@@ -7,19 +7,27 @@ data class Stopwatch(
     var isStarted: Boolean,
     var isFinished: Boolean,
     var startTime: Long = 0,
-    var leftTime: Long = 0 // rest from last start
-)
+    var leftTime: Long = 0 // left time to the finish
+) {
 
-fun MutableList<Stopwatch>.getStopwatch(id: Int): Stopwatch?  {
-    return this.find { it.id == id }
+    override fun equals(other: Any?): Boolean {
+        //return super.equals(other)
+        return if (other is Stopwatch) {
+            (id == other.id) && equalsContent(other)
+        } else {
+            false
+        }
+    }
+
+    fun equalsContent(other: Stopwatch): Boolean {
+        return (periodMs == other.periodMs) &&
+                (currentMs == other.currentMs) && (isStarted == other.isStarted) &&
+                (isFinished == other.isFinished) && (startTime == other.startTime) &&
+                (leftTime == other.leftTime)
+    }
 }
 
-fun MutableList<Stopwatch>.getStopwatchIndex(id: Int): Int {
-    return this.indexOf(getStopwatch(id))
-}
 
-fun MutableList<Stopwatch>.getStopwatchIndex(stopwatch: Stopwatch): Int {
-    return this.indexOf(stopwatch)
-}
+
 
 

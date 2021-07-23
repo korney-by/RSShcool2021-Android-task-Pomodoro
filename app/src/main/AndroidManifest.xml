@@ -15,10 +15,12 @@
             android:name="com.korneysoft.pomodoro.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="sensor"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true"
 
-            android:configChanges="orientation|screenSize">
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+
+<!--            android:windowSoftInputMode="adjustResize"-->
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

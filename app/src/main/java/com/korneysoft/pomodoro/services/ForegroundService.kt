@@ -72,7 +72,7 @@ class ForegroundService : Service() {
         if (isServiceStarted) {
             return
         }
-        Log.i("TAG", "commandStart()")
+        //Log.i("TAG", "commandStart()")
         try {
             moveToStartedState()
             startForegroundAndShowNotification()
@@ -98,7 +98,7 @@ class ForegroundService : Service() {
         if (!isServiceStarted) {
             return
         }
-        Log.i("TAG", "commandStop()")
+        //Log.i("TAG", "commandStop()")
         try {
             job?.cancel()
             stopForeground(true)
@@ -110,10 +110,10 @@ class ForegroundService : Service() {
 
     private fun moveToStartedState() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("TAG", "moveToStartedState(): Running on Android O or higher")
+            //Log.d("TAG", "moveToStartedState(): Running on Android O or higher")
             startForegroundService(Intent(this, ForegroundService::class.java))
         } else {
-            Log.d("TAG", "moveToStartedState(): Running on Android N or lower")
+            //Log.d("TAG", "moveToStartedState(): Running on Android N or lower")
             startService(Intent(this, ForegroundService::class.java))
         }
     }

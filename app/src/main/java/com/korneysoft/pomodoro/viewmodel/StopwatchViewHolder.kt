@@ -25,9 +25,9 @@ class StopwatchViewHolder(
        // if (stopwatch.isStarted) {binding.startPauseButton.text=
 
         if (stopwatch.isStarted) {
-            startTimer(stopwatch)
+            runningTimer(stopwatch)
         } else {
-            stopTimer(stopwatch)
+            stoppedTimer(stopwatch)
         }
 
         initButtonsListeners(stopwatch)
@@ -48,17 +48,19 @@ class StopwatchViewHolder(
         binding.deleteButton.setOnClickListener { listener.delete(stopwatch) }
     }
 
-    private fun stopTimer(stopwatch: Stopwatch) {
+    private fun stoppedTimer(stopwatch: Stopwatch) {
         binding.startPauseButton.text = resources.getString(R.string.button_text_start)
 
         binding.blinkingIndicator.isInvisible = true
         (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()
 
-        setBackgroundColor(stopwatch)
+        if (!stopwatch.isFinished) {
+            setBackgroundColor(stopwatch)
+        }
     }
 
 
-    private fun startTimer(stopwatch: Stopwatch) {
+    private fun runningTimer(stopwatch: Stopwatch) {
         binding.startPauseButton.text = resources.getString(R.string.button_text_stop)
 
         binding.blinkingIndicator.isInvisible = false
@@ -66,8 +68,9 @@ class StopwatchViewHolder(
 
         if (stopwatch.isFinished) {
             listener.stop(stopwatch)
+            setBackgroundColor(stopwatch)
         }
-        setBackgroundColor(stopwatch)
+
 
     }
 

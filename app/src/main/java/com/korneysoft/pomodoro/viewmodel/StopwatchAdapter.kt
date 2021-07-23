@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.korneysoft.pomodoro.databinding.StopwatchItemBinding
 import com.korneysoft.pomodoro.datamodel.Stopwatch
-import com.korneysoft.pomodoro.interfaces.StopwatchPainter
+import com.korneysoft.pomodoro.datamodel.Stopwatches
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
+import com.korneysoft.pomodoro.interfaces.StopwatchPainter
 
 class StopwatchAdapter(
     private val listener: StopwatchListener,
@@ -24,6 +25,7 @@ class StopwatchAdapter(
         holder.bind(getItem(position))
     }
 
+
     private companion object {
 
         private val itemComparator = object : DiffUtil.ItemCallback<Stopwatch>() {
@@ -33,9 +35,8 @@ class StopwatchAdapter(
             }
 
             override fun areContentsTheSame(oldItem: Stopwatch, newItem: Stopwatch): Boolean {
-                return oldItem.currentMs == newItem.currentMs &&
-                        oldItem.isStarted == newItem.isStarted &&
-                        oldItem.isFinished == newItem.isFinished
+                return oldItem.equalsContent(newItem)
+
             }
 
             override fun getChangePayload(oldItem: Stopwatch, newItem: Stopwatch) = Any()
