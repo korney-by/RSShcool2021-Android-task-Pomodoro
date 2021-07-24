@@ -6,8 +6,8 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
-
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,10 +19,14 @@ import com.korneysoft.pomodoro.datamodel.getStopwatchIndex
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 import com.korneysoft.pomodoro.interfaces.StopwatchPainter
 import com.korneysoft.pomodoro.services.*
-import com.korneysoft.pomodoro.utils.*
+import com.korneysoft.pomodoro.utils.getCurrentTime
+import com.korneysoft.pomodoro.utils.getStopwatchCurrentTime
+import com.korneysoft.pomodoro.utils.playFinishedSound
+import com.korneysoft.pomodoro.utils.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, LifecycleObserver {
@@ -221,4 +225,15 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         private const val INTERVAL = 100L
         // private const val RUNNING_STOPWATCH_ID ="RUNNING_STOPWATCH_ID"
     }
+
+    private var back_pressed: Long = 0
+    override fun onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis()) {
+            exitProcess(1)
+        } else {
+            Toast.makeText(baseContext, resources.getString(R.string.double_pressed_exit), Toast.LENGTH_SHORT).show()
+        }
+        back_pressed = System.currentTimeMillis()
+    }
+
 }

@@ -9,4 +9,5 @@
     <string name="button_text_restart">рестарт</string>
     <string name="message_timer_expired">Время Pomodoro таймера закончилось</string>
     <string name="service_name">Pomodoro таймер</string>
+    <string name="double_pressed_exit">Для выхода нажмите кнопку Назад еще раз!</string>
 </resources>

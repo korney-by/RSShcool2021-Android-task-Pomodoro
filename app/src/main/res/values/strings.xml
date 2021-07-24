@@ -8,5 +8,6 @@
     <string name="button_text_restart">restart</string>
     <string name="message_timer_expired">Pomodoro timer has expired</string>
     <string name="service_name">Pomodoro timer</string>
+    <string name="double_pressed_exit">Press Back button once again to exit!</string>
 
 </resources>
