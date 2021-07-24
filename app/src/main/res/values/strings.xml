@@ -2,9 +2,11 @@
     <string name="app_name">Pomodoro</string>
     <string name="input_time_hint">Minutes</string>
     <string name="button_text_add_timer">add timer</string>
-    <string name="null_text_stopwatch">00:00:00</string>
+    <string name="zerro_text_stopwatch">00:00:00</string>
     <string name="button_text_start">start</string>
     <string name="button_text_stop">stop</string>
     <string name="button_text_restart">restart</string>
+    <string name="message_timer_expired">Pomodoro timer has expired</string>
+    <string name="service_name">Pomodoro timer</string>
 
 </resources>

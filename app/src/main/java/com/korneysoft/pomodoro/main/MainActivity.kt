@@ -164,6 +164,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
     private fun stopFinished(stopwatch: Stopwatch) {
         if (!stopwatch.isFinished) {
             playFinishedSound(applicationContext)
+            showToast(applicationContext,resources.getString(R.string.message_timer_expired))
             stopwatch.isFinished = true
         }
     }

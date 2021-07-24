@@ -20,13 +20,15 @@ class StopwatchViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(stopwatch: Stopwatch) {
-        binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+        binding.stopwatchTimer.text =
+            stopwatch.currentMs.displayTime(resources.getString(R.string.zerro_text_stopwatch))
         binding.customViewPomodoroUnit.setPeriod(stopwatch.periodMs)
         binding.customViewPomodoroUnit.setCurrent(stopwatch.currentMs)
         binding.customViewPomodoroUnit.setFinished(stopwatch.isFinished)
 
-        binding.textPeriod.text=stopwatch.periodMs.displayTime()
-        binding.textPeriod.isVisible=stopwatch.isFinished
+        binding.textPeriod.text =
+            stopwatch.periodMs.displayTime(resources.getString(R.string.zerro_text_stopwatch))
+        binding.textPeriod.isVisible = stopwatch.isFinished
 
         initButtonsListeners(stopwatch)
 
@@ -38,7 +40,6 @@ class StopwatchViewHolder(
         } else {
             stoppedTimer()
         }
-
     }
 
     private fun initButtonsListeners(stopwatch: Stopwatch) {
@@ -59,7 +60,7 @@ class StopwatchViewHolder(
         if (stopwatch.isFinished) {
             listener.stop(stopwatch)
         }
-          setStateBlinkingIndicator(BLINKING_START)
+        setStateBlinkingIndicator(BLINKING_START)
     }
 
     private fun stoppedTimer() {

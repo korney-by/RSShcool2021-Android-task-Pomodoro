@@ -30,7 +30,7 @@ class ForegroundService : Service() {
 
     private val builder by lazy {
         NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Pomodoro Timer")
+            .setContentTitle(resources.getString(R.string.service_name))
             .setGroup("Timer")
             .setGroupSummary(false)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -86,7 +86,12 @@ class ForegroundService : Service() {
             while (true) {
                 notificationManager?.notify(
                     NOTIFICATION_ID,
-                    getNotification(getStopwatchCurrentTime(startTime, leftTime).displayTimeForService())
+                    getNotification(
+                        getStopwatchCurrentTime(
+                            startTime,
+                            leftTime
+                        ).displayTimeForService(resources.getString(R.string.message_timer_expired))
+                    )
                 )
                 delay(INTERVAL)
             }

@@ -35,7 +35,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/blinking_indicator"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/null_text_stopwatch" />
+            tools:text="@string/zerro_text_stopwatch" />
 
         <Button
             android:id="@+id/start_pause_button"

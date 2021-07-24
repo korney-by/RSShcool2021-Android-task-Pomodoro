@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pomodoro</string>
+    <string name="input_time_hint">Минуты</string>
+    <string name="button_text_add_timer">добавить таймер</string>
+    <string name="zerro_text_stopwatch">00:00:00</string>
+    <string name="button_text_start">старт</string>
+    <string name="button_text_stop">" стоп "</string>
+    <string name="button_text_restart">рестарт</string>
+    <string name="message_timer_expired">Время Pomodoro таймера закончилось</string>
+    <string name="service_name">Pomodoro таймер</string>
+</resources>
