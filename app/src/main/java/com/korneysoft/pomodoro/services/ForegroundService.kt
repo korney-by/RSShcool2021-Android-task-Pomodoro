@@ -8,12 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.korneysoft.pomodoro.MainActivity
+import com.korneysoft.pomodoro.main.MainActivity
 import com.korneysoft.pomodoro.R
-import com.korneysoft.pomodoro.viewmodel.displayTime
-import com.korneysoft.pomodoro.viewmodel.getStopwatchCurrentTime
+import com.korneysoft.pomodoro.utils.*
 import kotlinx.coroutines.*
 
 const val INVALID = "INVALID"
@@ -28,6 +26,7 @@ class ForegroundService : Service() {
     private var isServiceStarted = false
     private var notificationManager: NotificationManager? = null
     private var job: Job? = null
+
 
     private val builder by lazy {
         NotificationCompat.Builder(this, CHANNEL_ID)
@@ -87,7 +86,7 @@ class ForegroundService : Service() {
             while (true) {
                 notificationManager?.notify(
                     NOTIFICATION_ID,
-                    getNotification(getStopwatchCurrentTime(startTime, leftTime).displayTime())
+                    getNotification(getStopwatchCurrentTime(startTime, leftTime).displayTimeForService())
                 )
                 delay(INTERVAL)
             }

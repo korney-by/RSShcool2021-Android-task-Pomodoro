@@ -5,5 +5,6 @@
     <string name="null_text_stopwatch">00:00:00</string>
     <string name="button_text_start">start</string>
     <string name="button_text_stop">stop</string>
+    <string name="button_text_restart">restart</string>
 
 </resources>

@@ -13,10 +13,15 @@ data class Stopwatch(
     override fun equals(other: Any?): Boolean {
         //return super.equals(other)
         return if (other is Stopwatch) {
-            (id == other.id) && equalsContent(other)
+            equalsID(other) && equalsContent(other)
         } else {
             false
         }
+    }
+
+
+    fun equalsID(other: Stopwatch): Boolean {
+        return (id == other.id)
     }
 
     fun equalsContent(other: Stopwatch): Boolean {
@@ -24,6 +29,17 @@ data class Stopwatch(
                 (currentMs == other.currentMs) && (isStarted == other.isStarted) &&
                 (isFinished == other.isFinished) && (startTime == other.startTime) &&
                 (leftTime == other.leftTime)
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + periodMs.hashCode()
+        result = 31 * result + currentMs.hashCode()
+        result = 31 * result + isStarted.hashCode()
+        result = 31 * result + isFinished.hashCode()
+        result = 31 * result + startTime.hashCode()
+        result = 31 * result + leftTime.hashCode()
+        return result
     }
 }
 

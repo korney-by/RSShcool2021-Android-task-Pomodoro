@@ -1,6 +1,5 @@
-package com.korneysoft.pomodoro
+package com.korneysoft.pomodoro.main
 
-//import android.os.CountDownTimer
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
@@ -12,42 +11,26 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.korneysoft.pomodoro.R
 import com.korneysoft.pomodoro.databinding.ActivityMainBinding
 import com.korneysoft.pomodoro.datamodel.Stopwatch
 import com.korneysoft.pomodoro.datamodel.Stopwatches
-import com.korneysoft.pomodoro.datamodel.getStopwatch
 import com.korneysoft.pomodoro.datamodel.getStopwatchIndex
 import com.korneysoft.pomodoro.interfaces.StopwatchListener
 import com.korneysoft.pomodoro.interfaces.StopwatchPainter
 import com.korneysoft.pomodoro.services.*
-import com.korneysoft.pomodoro.viewmodel.StopwatchAdapter
-import com.korneysoft.pomodoro.viewmodel.getCurrentTime
-import com.korneysoft.pomodoro.viewmodel.getStopwatchCurrentTime
+import com.korneysoft.pomodoro.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, LifecycleObserver {
-    private val stopwatches=Stopwatches.getStopwatchesList()
+    private val stopwatches = Stopwatches.getStopwatchesList()
 
     private lateinit var binding: ActivityMainBinding
     private val stopwatchAdapter = StopwatchAdapter(this, this)
 
-
-    //private var mainTimer: CountDownTimer? = null
-
-
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        outState.putInt(RUNNING_STOPWATCH_ID, runningStopwatchID)
-//
-//    }
-//
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        runningStopwatchID = savedInstanceState.getInt(RUNNING_STOPWATCH_ID)
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,21 +41,13 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //startTime = System.currentTimeMillis()
-
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = stopwatchAdapter
         }
 
-//        binding.recycler.setHasFixedSize(true)
-//        binding.recycler.isNestedScrollingEnabled=false
-
-        // mainTimer = getMainTimer()
         startTimer()
         stopwatchAdapter.submitList(stopwatches.toList())
-
-        hideKeyboard(this)
 
         binding.addNewStopwatchButton.setOnClickListener {
             binding.editTextNumber.text.toString().toLongOrNull()?.apply {
@@ -80,44 +55,50 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
                     Stopwatch(
                         Stopwatches.getNextID(),
                         this * 60000,
-                        this * 60000, // - 50000, //TODO убрать
+                        this * 60000,
                         isStarted = false,
                         isFinished = false
                     )
                 )
-                stopwatchAdapter.submitList(stopwatches.toList())
+                stopwatchAdapter.submitList(stopwatches.toList()) {
+                    showStopwatch(stopwatchAdapter.itemCount - 1)
+                }
+
                 binding.editTextNumber.selectAll()
             }
         }
-
     }
-
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
-        if (Stopwatches.isStopwatchRunning) {
+        if (Stopwatches.isAnyStopwatchRunning) {
+            binding.editTextNumber.clearFocus() // to show all List when back to App
             val startIntent = Intent(this, ForegroundService::class.java)
             startIntent.putExtra(COMMAND_ID, COMMAND_START)
-            startIntent.putExtra(STARTED_TIMER_TIME_MS,Stopwatches.getStartTimeCurrentStopwatch())
+            startIntent.putExtra(STARTED_TIMER_TIME_MS, Stopwatches.getStartTimeCurrentStopwatch())
             startIntent.putExtra(STARTED_TIMER_LEFT_MS, Stopwatches.getLeftTimeCurrentStopwatch())
             startService(startIntent)
         }
     }
-
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onAppForegrounded() {
         val stopIntent = Intent(this, ForegroundService::class.java)
         stopIntent.putExtra(COMMAND_ID, COMMAND_STOP)
         startService(stopIntent)
+        showStopwatch(Stopwatches.getRunningStopwatchIndex())
+    }
+
+    private fun showStopwatch(position: Int) {
+        if (position >= 0) {
+            binding.recycler.smoothScrollToPosition(position)
+        }
     }
 
     private fun hideKeyboard(activity: Activity) {
         val imm: InputMethodManager =
             activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
         var view: View? = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = View(activity)
         }
@@ -126,19 +107,13 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
         // check orientation
-        if (newConfig.orientation==Configuration.ORIENTATION_LANDSCAPE){
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             hideKeyboard(this)
         }
     }
 
-
     private fun startTimer() {
-//        mainTimer?.cancel()
-//        mainTimer = getMainTimer()
-//        mainTimer?.start()
-
         lifecycleScope.launch(Dispatchers.Main) {
             while (true) {
                 onTickTimer()
@@ -147,99 +122,87 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         }
     }
 
-//    private fun stopTimer() {
-//        mainTimer?.cancel()
-//    }
-
-//    private fun getMainTimer(): CountDownTimer {
-//        return object : CountDownTimer(PERIOD, INTERVAL) {
-//
-//            override fun onTick(millisUntilFinished: Long) {
-//                onTickTimer()
-//            }
-//
-//            override fun onFinish() {
-//                //    binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
-//            }
-//        }
-//    }
-
     private fun onTickTimer() {
-        if (!Stopwatches.isStopwatchRunning) return
+        if (!Stopwatches.isAnyStopwatchRunning) return
 
-        val index = Stopwatches.getRunningStopwatchIndex()
-        val stopwatch = Stopwatches.getRunningStopwatch()?.copy()
+        val stopwatchRunning = Stopwatches.getRunningStopwatch()
+        val stopwatchNew = stopwatchRunning?.copy()
 
-        stopwatch?.let {
+        stopwatchNew?.let {
             if (it.currentMs <= 0) {
                 stopFinished(it)
             } else {
                 if (it.isStarted) {
-                    it.currentMs = getStopwatchCurrentTime(it.startTime,it.leftTime)
+                    it.currentMs = getStopwatchCurrentTime(it.startTime, it.leftTime)
                 }
             }
-            showChanges(index, it)
+            showStopwatchChanges(stopwatchRunning, it)
         }
     }
 
-    private fun showChanges(index: Int, stopwatch: Stopwatch) {
-        if (index >= 0) {
-            stopwatches[index] = stopwatch
-            stopwatchAdapter.submitList(stopwatches.toList())
-        }
-
-        //stopwatchAdapter.notifyItemChanged(stopwatches.getStopwatchIndex(stopwatch))
-    }
-
-    override fun getBackgroundColor(id: Int): Int {
-        val typedValue = TypedValue()
-        stopwatches.getStopwatch(id)?.let {
-            if (it.isFinished) {
-                theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
-            } else {
-                theme.resolveAttribute(R.attr.backgroundColor, typedValue, true)
+    private fun showStopwatchChanges(stopwatchOld: Stopwatch?, stopwatchNew: Stopwatch) {
+        if (stopwatchOld != null) {
+            val index = stopwatches.getStopwatchIndex(stopwatchOld)
+            if (index >= 0) {
+                stopwatches[index] = stopwatchNew
+                stopwatchAdapter.submitList(stopwatches.toList()) {
+                }
             }
         }
-        return typedValue.data  // **just add this line to your code!!**
+    }
+
+    override fun getBackgroundColor(stopwatch: Stopwatch): Int {
+        val typedValue = TypedValue()
+        if (stopwatch.isFinished) {
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+        } else {
+            theme.resolveAttribute(R.attr.backgroundColor, typedValue, true)
+        }
+        return typedValue.data
     }
 
     private fun stopFinished(stopwatch: Stopwatch) {
-        stopwatch.isFinished = true
+        if (!stopwatch.isFinished) {
+            playFinishedSound(applicationContext)
+            stopwatch.isFinished = true
+        }
     }
 
     override fun start(stopwatch: Stopwatch) {
         Stopwatches.getRunningStopwatch()?.let {
             changeStopwatchState(it, false)
         }
-        changeStopwatchState(stopwatch, true) // изменение состояния таймера ?
+        changeStopwatchState(stopwatch, true) // change state Timer
     }
 
     override fun stop(stopwatch: Stopwatch) {
         changeStopwatchState(stopwatch, false)
     }
 
-    private fun changeStopwatchState(_stopwatch: Stopwatch, isStart: Boolean) {
-        val stopwatch = _stopwatch.copy()
 
-        with(stopwatch) {
+    private fun changeStopwatchState(stopwatch: Stopwatch, isStart: Boolean) {
+        val stopwatchNew = stopwatch.copy()
+
+        with(stopwatchNew) {
             isStarted = isStart
             if (isStart) {
+                if (isFinished) {
+                    leftTime = periodMs
+                    currentMs = periodMs
+                } else {
+                    leftTime = currentMs
+                }
                 isFinished = false
                 startTime = getCurrentTime()
-                leftTime = currentMs
                 Stopwatches.setRunningStopwatchID(id)
             } else {
-                Stopwatches.setRunningStopwatchID(id)
+                Stopwatches.setRunningStopwatchIDToStop(id)
                 if (isFinished) {
-                    currentMs = periodMs
-                    leftTime = periodMs
+                    currentMs = 0
                 }
-
-
             }
         }
-        val index = stopwatches.getStopwatchIndex(_stopwatch)
-        showChanges(index, stopwatch)
+        showStopwatchChanges(stopwatch, stopwatchNew)
     }
 
 
@@ -255,6 +218,6 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
 
     private companion object {
         private const val INTERVAL = 100L
-       // private const val RUNNING_STOPWATCH_ID ="RUNNING_STOPWATCH_ID"
+        // private const val RUNNING_STOPWATCH_ID ="RUNNING_STOPWATCH_ID"
     }
 }

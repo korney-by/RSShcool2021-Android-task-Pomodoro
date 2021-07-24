@@ -7,7 +7,7 @@ object Stopwatches {
     private var nextId = 0
 
     private var runningStopwatchID = STOPWATCHES_NO_RUNNING
-    val isStopwatchRunning: Boolean
+    val isAnyStopwatchRunning: Boolean
         get() {
             return runningStopwatchID != STOPWATCHES_NO_RUNNING
         }
@@ -25,7 +25,7 @@ object Stopwatches {
         runningStopwatchID = id
     }
 
-    fun setRunningStopwatchIDToStop() {
+    private fun setRunningStopwatchIDToStop() {
         runningStopwatchID = STOPWATCHES_NO_RUNNING
     }
 
@@ -36,7 +36,7 @@ object Stopwatches {
     }
 
     fun getLeftTimeCurrentStopwatch(): Long {
-        return if (isStopwatchRunning) {
+        return if (isAnyStopwatchRunning) {
             stopwatches.getStopwatch(runningStopwatchID)?.leftTime ?: 0
         } else {
             0
@@ -44,7 +44,7 @@ object Stopwatches {
     }
 
     fun getStartTimeCurrentStopwatch(): Long {
-        return if (isStopwatchRunning) {
+        return if (isAnyStopwatchRunning) {
             stopwatches.getStopwatch(runningStopwatchID)?.startTime ?: 0
         } else {
             0
@@ -56,7 +56,7 @@ object Stopwatches {
     }
 
     fun getRunningStopwatch(): Stopwatch? {
-        return if (isStopwatchRunning) {
+        return if (isAnyStopwatchRunning) {
             return stopwatches.getStopwatch(runningStopwatchID)
         } else {
             null

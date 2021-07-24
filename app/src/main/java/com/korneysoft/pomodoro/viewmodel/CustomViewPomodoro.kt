@@ -17,9 +17,11 @@ class CustomViewPomodoro @JvmOverloads constructor(
 
     private var periodMs = 0L
     private var currentMs = 0L
+    private var isFinished = false
     private var color = 0
     private var style = FILL
     private val paint = Paint()
+
 
     init {
         if (attrs != null) {
@@ -41,7 +43,7 @@ class CustomViewPomodoro @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (periodMs == 0L || currentMs == 0L) return
+        if (periodMs == 0L || (currentMs==0L && !isFinished)) return
         val startAngel = (((periodMs-currentMs).toFloat()/periodMs) * 360)
 
         canvas.drawArc(
@@ -69,6 +71,11 @@ class CustomViewPomodoro @JvmOverloads constructor(
      */
     fun setPeriod(period: Long) {
         periodMs = period
+    }
+
+    fun setFinished(_isFinisher: Boolean) {
+        isFinished = _isFinisher
+        invalidate()
     }
 
     private companion object {

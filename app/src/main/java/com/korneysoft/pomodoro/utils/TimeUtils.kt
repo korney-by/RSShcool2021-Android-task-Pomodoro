@@ -1,8 +1,9 @@
-package com.korneysoft.pomodoro.viewmodel
+package com.korneysoft.pomodoro.utils
 
 import android.os.SystemClock
 
 const val START_TIME = "00:00:00"
+const val TIMER_EXPIRED = "Timer has expired"
 
 fun Long.displayTime(): String {
     if (this <= 0L) {
@@ -14,6 +15,13 @@ fun Long.displayTime(): String {
     val s = (this + 999) / 1000 % 60
 
     return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}"
+}
+
+fun Long.displayTimeForService(): String {
+    if (this <= 0L) {
+        return TIMER_EXPIRED
+    }
+    return this.displayTime()
 }
 
 private fun displaySlot(count: Long): String {
