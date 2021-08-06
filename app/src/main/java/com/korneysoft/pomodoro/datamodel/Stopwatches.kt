@@ -4,6 +4,7 @@ object Stopwatches {
     private const val STOPWATCHES_NO_RUNNING = -1
 
     private val stopwatches = mutableListOf<Stopwatch>()
+
     private var nextId = 0
 
     private var runningStopwatchID = STOPWATCHES_NO_RUNNING
@@ -27,6 +28,10 @@ object Stopwatches {
 
     private fun setRunningStopwatchIDToStop() {
         runningStopwatchID = STOPWATCHES_NO_RUNNING
+    }
+
+    fun getRunningStopwatchID(): Int {
+        return runningStopwatchID
     }
 
     fun setRunningStopwatchIDToStop(id: Int) {
@@ -66,7 +71,7 @@ object Stopwatches {
     fun deleteStopwatch(stopwatch: Stopwatch) {
         setRunningStopwatchIDToStop(stopwatch.id)
         stopwatches.remove(stopwatch)
-}
+    }
 }
 
 fun MutableList<Stopwatch>.getStopwatch(id: Int): Stopwatch? {

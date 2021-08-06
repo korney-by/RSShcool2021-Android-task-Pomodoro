@@ -14,16 +14,33 @@ class StopwatchAdapter(
     private val painter: StopwatchPainter
 ) : ListAdapter<Stopwatch, StopwatchViewHolder>(itemComparator) {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StopwatchViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = StopwatchItemBinding.inflate(layoutInflater, parent, false)
         return StopwatchViewHolder(binding, listener, painter, binding.root.context.resources)
     }
 
+
     override fun onBindViewHolder(holder: StopwatchViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), arrayListOf(Stopwatch.CHANGED_ALL))
     }
+
+    override fun onBindViewHolder(
+        holder: StopwatchViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+
+        } else {
+            for (payload in payloads) {
+                holder.bind(getItem(position), payload)
+            }
+        }
+    }
+
 
     private companion object {
 
@@ -38,8 +55,9 @@ class StopwatchAdapter(
 
             }
 
-            override fun getChangePayload(oldItem: Stopwatch, newItem: Stopwatch) = Any()
-
+            override fun getChangePayload(oldItem: Stopwatch, newItem: Stopwatch): Any {
+                return oldItem.getChanges(newItem)
+            }
         }
     }
 }

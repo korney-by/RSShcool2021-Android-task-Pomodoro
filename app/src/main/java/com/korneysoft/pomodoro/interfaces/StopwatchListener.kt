@@ -9,7 +9,8 @@ interface StopwatchListener {
 
     fun stop(stopwatch: Stopwatch)
 
-  //  fun reset(id: Int)
-
     fun delete(stopwatch:Stopwatch)
+
+    fun finish(stopwatch:Stopwatch)
+
 }

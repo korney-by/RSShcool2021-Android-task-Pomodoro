@@ -2,7 +2,7 @@ package com.korneysoft.pomodoro.utils
 
 import android.os.SystemClock
 
-fun Long.displayTime(zeroTimeText:String): String {
+fun Long.displayTime(zeroTimeText:String="00:00:00"): String {
     if (this <= 0L) {
         return zeroTimeText
     }

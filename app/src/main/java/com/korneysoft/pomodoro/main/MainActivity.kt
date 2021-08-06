@@ -13,16 +13,10 @@ import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.korneysoft.pomodoro.R
 import com.korneysoft.pomodoro.databinding.ActivityMainBinding
-import com.korneysoft.pomodoro.datamodel.Stopwatch
-import com.korneysoft.pomodoro.datamodel.Stopwatches
-import com.korneysoft.pomodoro.datamodel.getStopwatchIndex
-import com.korneysoft.pomodoro.interfaces.StopwatchListener
-import com.korneysoft.pomodoro.interfaces.StopwatchPainter
+import com.korneysoft.pomodoro.datamodel.*
+import com.korneysoft.pomodoro.interfaces.*
 import com.korneysoft.pomodoro.services.*
-import com.korneysoft.pomodoro.utils.getCurrentTime
-import com.korneysoft.pomodoro.utils.getStopwatchCurrentTime
-import com.korneysoft.pomodoro.utils.playFinishedSound
-import com.korneysoft.pomodoro.utils.showToast
+import com.korneysoft.pomodoro.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,12 +29,10 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
     private lateinit var binding: ActivityMainBinding
     private val stopwatchAdapter = StopwatchAdapter(this, this)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
-
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -55,23 +47,29 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
 
         binding.addNewStopwatchButton.setOnClickListener {
             binding.editTextNumber.text.toString().toLongOrNull()?.apply {
-                stopwatches.add(
-                    Stopwatch(
-                        Stopwatches.getNextID(),
-                        this * 60000,
-                        this * 60000,
-                        isStarted = false,
-                        isFinished = false
-                    )
-                )
-                stopwatchAdapter.submitList(stopwatches.toList()) {
-                    showStopwatch(stopwatchAdapter.itemCount - 1)
-                }
-
-                binding.editTextNumber.selectAll()
+                addNewStopwatch(this)
             }
         }
+
+        //AddTimersForTest(500_000,30000)
+
     }
+
+
+//    private fun AddTimersForTest(count:Int,timeMS:Long){
+//        for (i in 0 until count){
+//            stopwatches.add(
+//                Stopwatch(
+//                    Stopwatches.getNextID(),
+//                     timeMS,
+//                     timeMS,
+//                     false,
+//                     false
+//                )
+//            )
+//        }
+//        stopwatchAdapter.submitList(stopwatches.toList())
+//    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onAppBackgrounded() {
@@ -91,6 +89,23 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         stopIntent.putExtra(COMMAND_ID, COMMAND_STOP)
         startService(stopIntent)
         showStopwatch(Stopwatches.getRunningStopwatchIndex())
+    }
+
+    private fun addNewStopwatch(timeMs:Long) {
+        stopwatches.add(
+            Stopwatch(
+                Stopwatches.getNextID(),
+                timeMs * 60000,
+                timeMs * 60000,//-50000,
+                _isStarted = false,
+                _isFinished = false
+            )
+        )
+        stopwatchAdapter.submitList(stopwatches.toList()) {
+            showStopwatch(stopwatchAdapter.itemCount - 1)
+        }
+
+        binding.editTextNumber.selectAll()
     }
 
     private fun showStopwatch(position: Int) {
@@ -127,32 +142,7 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
     }
 
     private fun onTickTimer() {
-        if (!Stopwatches.isAnyStopwatchRunning) return
-
-        val stopwatchRunning = Stopwatches.getRunningStopwatch()
-        val stopwatchNew = stopwatchRunning?.copy()
-
-        stopwatchNew?.let {
-            if (it.currentMs <= 0) {
-                stopFinished(it)
-            } else {
-                if (it.isStarted) {
-                    it.currentMs = getStopwatchCurrentTime(it.startTime, it.leftTime)
-                }
-            }
-            showStopwatchChanges(stopwatchRunning, it)
-        }
-    }
-
-    private fun showStopwatchChanges(stopwatchOld: Stopwatch?, stopwatchNew: Stopwatch) {
-        if (stopwatchOld != null) {
-            val index = stopwatches.getStopwatchIndex(stopwatchOld)
-            if (index >= 0) {
-                stopwatches[index] = stopwatchNew
-                stopwatchAdapter.submitList(stopwatches.toList()) {
-                }
-            }
-        }
+        Stopwatches.getRunningStopwatch()?.doTickTimer()
     }
 
     override fun getBackgroundColor(stopwatch: Stopwatch): Int {
@@ -165,75 +155,57 @@ class MainActivity : AppCompatActivity(), StopwatchListener, StopwatchPainter, L
         return typedValue.data
     }
 
-    private fun stopFinished(stopwatch: Stopwatch) {
-        if (!stopwatch.isFinished) {
-            playFinishedSound(applicationContext)
-            showToast(applicationContext,resources.getString(R.string.message_timer_expired))
-            stopwatch.isFinished = true
+    private fun infoAboutFinished(stopwatch: Stopwatch) {
+        if (stopwatch.isFinished) {
+            //playFinishedSound(applicationContext)
+            playSound(applicationContext,R.raw.alldone)
+            showToast(applicationContext, resources.getString(R.string.message_timer_expired))
         }
     }
 
     override fun start(stopwatch: Stopwatch) {
-        Stopwatches.getRunningStopwatch()?.let {
-            changeStopwatchState(it, false)
+        Stopwatches.getRunningStopwatch()?.stop()
+        Stopwatches.setRunningStopwatchID(stopwatch.id)
+        playSound(applicationContext,R.raw.start)
+        stopwatch.onAfterFinished = {
+            finish(stopwatch)
         }
-        changeStopwatchState(stopwatch, true) // change state Timer
     }
 
     override fun stop(stopwatch: Stopwatch) {
-        changeStopwatchState(stopwatch, false)
-    }
-
-
-    private fun changeStopwatchState(stopwatch: Stopwatch, isStart: Boolean) {
-        val stopwatchNew = stopwatch.copy()
-
-        with(stopwatchNew) {
-            isStarted = isStart
-            if (isStart) {
-                if (isFinished) {
-                    leftTime = periodMs
-                    currentMs = periodMs
-                } else {
-                    leftTime = currentMs
-                }
-                isFinished = false
-                startTime = getCurrentTime()
-                Stopwatches.setRunningStopwatchID(id)
-            } else {
-                Stopwatches.setRunningStopwatchIDToStop(id)
-                if (isFinished) {
-                    currentMs = 0
-                }
-            }
+        Stopwatches.setRunningStopwatchIDToStop(stopwatch.id)
+        if (!stopwatch.isFinished){
+            stopwatch.onAfterFinished=null
         }
-        showStopwatchChanges(stopwatch, stopwatchNew)
     }
 
-
-//    override fun reset(id: Int) {
-//        changeStopwatch(id, 0L, false)
-//    }
+    override fun finish(stopwatch: Stopwatch) {
+        Stopwatches.setRunningStopwatchIDToStop(stopwatch.id)
+        stopwatch.onAfterFinished=null
+        infoAboutFinished(stopwatch)
+    }
 
     override fun delete(stopwatch: Stopwatch) {
         Stopwatches.deleteStopwatch(stopwatch)
         stopwatchAdapter.submitList(stopwatches.toList())
     }
 
-
-    private companion object {
-        private const val INTERVAL = 100L
-        // private const val RUNNING_STOPWATCH_ID ="RUNNING_STOPWATCH_ID"
+    private var backPressed: Long = 0
+    override fun onBackPressed() {
+        if (backPressed + 2000 > System.currentTimeMillis()) {
+            exitProcess(-1)
+        } else {
+            Toast.makeText(
+                baseContext,
+                resources.getString(R.string.double_pressed_exit),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        backPressed = System.currentTimeMillis()
     }
 
-    private var back_pressed: Long = 0
-    override fun onBackPressed() {
-        if (back_pressed + 2000 > System.currentTimeMillis()) {
-            exitProcess(1)
-        } else {
-            Toast.makeText(baseContext, resources.getString(R.string.double_pressed_exit), Toast.LENGTH_SHORT).show()
-        }
-        back_pressed = System.currentTimeMillis()
+    private companion object {
+        private const val INTERVAL = 10L
     }
 
 }
