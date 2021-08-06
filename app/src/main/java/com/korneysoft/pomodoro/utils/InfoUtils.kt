@@ -13,8 +13,8 @@ fun playNotification(context: Context,notification:Int) {
     ).play()
 }
 
-fun playSound(context: Context, resid: Int) {
-    val mediaPlayer=MediaPlayer.create(context,resid)
+fun playSound(context: Context, resId: Int) {
+    val mediaPlayer=MediaPlayer.create(context,resId)
     mediaPlayer.start()
 }
 
